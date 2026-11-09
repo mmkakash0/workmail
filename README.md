@@ -3,343 +3,385 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Web Hub | Your 100 Categories</title>
+    <title>Viral Video Hub - Watch Trending Videos</title>
+    <!-- Tailwind CSS for Styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
+            background-color: #0f172a; /* Dark theme for video sites */
+            color: #f8fafc;
         }
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
+        /* Hover effect for play button */
+        .play-btn-glow {
+            filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.8));
         }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1; 
+        /* Limit title to 2 lines */
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;  
+            overflow: hidden;
         }
-        ::-webkit-scrollbar-thumb {
-            background: #c1c1c1; 
-            border-radius: 4px;
+        
+        /* Spinner Animation for Fake Loading */
+        @keyframes spin-slow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8; 
-        }
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(10px);
+        .spin-slow {
+            animation: spin-slow 1.5s linear infinite;
         }
     </style>
 </head>
-<body class="text-gray-800 flex h-screen overflow-hidden bg-gray-50">
+<body class="min-h-screen flex flex-col">
 
-    <!-- Sidebar (Categories) -->
-    <aside class="w-64 bg-white shadow-xl h-full flex flex-col hidden md:flex z-20 transition-all duration-300">
-        <div class="p-6 border-b border-gray-100 flex items-center gap-3">
-            <div class="bg-indigo-600 text-white p-2 rounded-lg">
-                <i class="fa-solid fa-globe text-xl"></i>
+    <!-- Navbar -->
+    <header class="bg-gray-900 border-b border-gray-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2 cursor-pointer">
+                <svg class="w-8 h-8 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                </svg>
+                <span class="text-xl font-bold tracking-tight">Viral<span class="text-red-500">Hub</span></span>
             </div>
-            <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">Web Hub</h1>
+            <!-- Optional Top CTA for Adsterra -->
+            <a href="[আপনার Adsterra Link]" target="_blank" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-full text-sm font-semibold transition-colors shadow-[0_0_15px_rgba(220,38,38,0.5)] animate-pulse">
+                🔥 Premium Videos
+            </a>
         </div>
-        
-        <div class="p-4">
-            <h2 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">All Categories (100)</h2>
-            <div class="relative">
-                <input type="text" id="categorySearch" placeholder="Search category..." 
-                    class="w-full pl-9 pr-3 py-2 bg-gray-100 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                <i class="fa-solid fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
-            </div>
-        </div>
-
-        <div class="flex-1 overflow-y-auto p-4 pt-0 space-y-1" id="sidebarCategories">
-            <!-- Sidebar categories will be injected here -->
-        </div>
-    </aside>
+    </header>
 
     <!-- Main Content -->
-    <main class="flex-1 flex flex-col h-full relative overflow-hidden">
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         
-        <!-- Topbar -->
-        <header class="glass-effect shadow-sm z-10 border-b border-gray-100 p-4 md:p-6 flex justify-between items-center">
-            <div class="flex items-center gap-4 w-full max-w-2xl">
-                <button id="mobileMenuBtn" class="md:hidden text-gray-600 hover:text-indigo-600 focus:outline-none">
-                    <i class="fa-solid fa-bars text-2xl"></i>
-                </button>
-                <div class="relative w-full">
-                    <input type="text" id="globalSearch" placeholder="Search any website or category..." 
-                        class="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-base shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all w-full">
-                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-gray-400 text-lg"></i>
-                </div>
+        <div class="mb-8 flex justify-between items-end">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">🔥 Trending Right Now</h1>
+                <p class="text-gray-400 text-sm md:text-base">Watch the most viral videos on the internet today.</p>
             </div>
-            <div class="hidden sm:flex items-center gap-4 text-sm font-medium text-gray-500">
-                <span><i class="fa-regular fa-clock mr-1"></i> <span id="timeDisplay"></span></span>
-            </div>
-        </header>
-
-        <!-- Dynamic Grid Content -->
-        <div class="flex-1 overflow-y-auto p-6 md:p-8" id="mainContainer">
-            <!-- Website Cards will be injected here -->
         </div>
-        
+
+        <!-- Video Grid Container -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
+            <!-- 
+            ======================================================================
+            👇👇👇 এখান থেকে একটি ভিডিও কার্ড শুরু 👇👇👇 
+            ====================================================================== 
+            -->
+            <!-- Video 1 -->
+            <a href="[আপনার Adsterra Direct Link এখানে দিন]" target="_blank" class="block group cursor-pointer">
+                <!-- Thumbnail Area -->
+                <div class="relative rounded-xl overflow-hidden aspect-video bg-gray-800 border border-gray-700">
+                    <!-- Thumbnail Image (Change src to your image link) -->
+                    <img src="https://placehold.co/600x338/1e293b/ef4444?text=Bangla+Viral+18%2B" alt="Video Thumbnail" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500">
+                    
+                    <!-- Play Button Overlay -->
+                    <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center group-hover:bg-opacity-40 transition-all">
+                        <svg class="w-14 h-14 text-white opacity-90 group-hover:text-red-500 group-hover:play-btn-glow transition-all duration-300" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                    </div>
+                    
+                    <!-- Fake Duration Badge -->
+                    <div class="absolute bottom-2 right-2 bg-black bg-opacity-80 px-2 py-1 text-xs font-semibold rounded">
+                        12:45
+                    </div>
+                    
+                    <!-- 18+ Badge -->
+                    <div class="absolute top-2 left-2 bg-red-600 px-2 py-1 text-xs font-bold text-white rounded">
+                        18+ Only
+                    </div>
+                </div>
+                
+                <!-- Video Details -->
+                <div class="mt-3">
+                    <h3 class="text-base font-semibold text-gray-100 group-hover:text-red-400 transition-colors line-clamp-2">
+                        Bangla Viral MMS Leaked Full Video 🔞 Watch Before Delete
+                    </h3>
+                    <div class="flex items-center text-xs text-gray-400 mt-1.5 gap-2">
+                        <span>3.2M views</span>
+                        <span>•</span>
+                        <span>1 hour ago</span>
+                    </div>
+                </div>
+            </a>
+            <!-- 👆👆👆 ভিডিও কার্ড শেষ 👆👆👆 -->
+
+
+            <!-- Video 2 -->
+            <a href="[আপনার Adsterra Direct Link এখানে দিন]" target="_blank" class="block group cursor-pointer">
+                <div class="relative rounded-xl overflow-hidden aspect-video bg-gray-800 border border-gray-700">
+                    <img src="https://placehold.co/600x338/1e293b/ef4444?text=Kolkata+Scandal" alt="Video Thumbnail" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center group-hover:bg-opacity-40 transition-all">
+                        <svg class="w-14 h-14 text-white opacity-90 group-hover:text-red-500 group-hover:play-btn-glow transition-all duration-300" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </div>
+                    <div class="absolute bottom-2 right-2 bg-black bg-opacity-80 px-2 py-1 text-xs font-semibold rounded">08:20</div>
+                    <div class="absolute top-2 left-2 bg-red-600 px-2 py-1 text-xs font-bold text-white rounded">Viral</div>
+                </div>
+                <div class="mt-3">
+                    <h3 class="text-base font-semibold text-gray-100 group-hover:text-red-400 transition-colors line-clamp-2">
+                        Kolkata Model Hidden Camera Scandal Video Uncensored 😱
+                    </h3>
+                    <div class="flex items-center text-xs text-gray-400 mt-1.5 gap-2">
+                        <span>1.8M views</span>
+                        <span>•</span>
+                        <span>3 hours ago</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Video 3 -->
+            <a href="[আপনার Adsterra Direct Link এখানে দিন]" target="_blank" class="block group cursor-pointer">
+                <div class="relative rounded-xl overflow-hidden aspect-video bg-gray-800 border border-gray-700">
+                    <img src="https://placehold.co/600x338/1e293b/ef4444?text=TikToker+Leaked" alt="Video Thumbnail" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center group-hover:bg-opacity-40 transition-all">
+                        <svg class="w-14 h-14 text-white opacity-90 group-hover:text-red-500 group-hover:play-btn-glow transition-all duration-300" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </div>
+                    <div class="absolute bottom-2 right-2 bg-black bg-opacity-80 px-2 py-1 text-xs font-semibold rounded">04:15</div>
+                    <div class="absolute top-2 left-2 bg-red-600 px-2 py-1 text-xs font-bold text-white rounded">18+ Only</div>
+                </div>
+                <div class="mt-3">
+                    <h3 class="text-base font-semibold text-gray-100 group-hover:text-red-400 transition-colors line-clamp-2">
+                        Bangladeshi TikToker Private Room Video Leaked! (Full HD)
+                    </h3>
+                    <div class="flex items-center text-xs text-gray-400 mt-1.5 gap-2">
+                        <span>5.1M views</span>
+                        <span>•</span>
+                        <span>45 mins ago</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Video 4 -->
+            <a href="[আপনার Adsterra Direct Link এখানে দিন]" target="_blank" class="block group cursor-pointer">
+                <div class="relative rounded-xl overflow-hidden aspect-video bg-gray-800 border border-gray-700">
+                    <img src="https://placehold.co/600x338/1e293b/ef4444?text=Resort+Scandal" alt="Video Thumbnail" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center group-hover:bg-opacity-40 transition-all">
+                        <svg class="w-14 h-14 text-white opacity-90 group-hover:text-red-500 group-hover:play-btn-glow transition-all duration-300" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </div>
+                    <div class="absolute bottom-2 right-2 bg-black bg-opacity-80 px-2 py-1 text-xs font-semibold rounded">21:05</div>
+                    <div class="absolute top-2 left-2 bg-red-600 px-2 py-1 text-xs font-bold text-white rounded">Exclusive</div>
+                </div>
+                <div class="mt-3">
+                    <h3 class="text-base font-semibold text-gray-100 group-hover:text-red-400 transition-colors line-clamp-2">
+                        Cox's Bazar Hotel Hidden Cam Full Footage Released 🚨
+                    </h3>
+                    <div class="flex items-center text-xs text-gray-400 mt-1.5 gap-2">
+                        <span>800K views</span>
+                        <span>•</span>
+                        <span>2 days ago</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- আরও ভিডিও যোগ করার জন্য উপরের যেকোনো একটি ভিডিও কার্ড কপি করে এখানে পেস্ট করুন -->
+
+        </div>
+
+        <!-- Load More Button (Fake function to redirect to Adsterra) -->
+        <div class="mt-12 text-center">
+            <a href="[আপনার Adsterra Direct Link এখানে দিন]" target="_blank" class="inline-block bg-gray-800 hover:bg-gray-700 text-white border border-gray-600 px-8 py-3 rounded-lg font-semibold transition-colors">
+                Load More Videos...
+            </a>
+        </div>
+
     </main>
 
-    <!-- Mobile Sidebar Overlay -->
-    <div id="mobileOverlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
+    <!-- Footer -->
+    <footer class="bg-gray-900 border-t border-gray-800 py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center text-gray-500 text-sm">
+            <p>&copy; 2026 ViralHub. All rights reserved.</p>
+            <p class="mt-2 text-xs">By watching videos on this platform, you agree to our Terms and Conditions. Warning: Some content may be age-restricted.</p>
+        </div>
+    </footer>
 
+    <!-- 5-Step Unlock Modal -->
+    <div id="unlock-modal" class="hidden fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-gray-900 border border-gray-700 rounded-2xl p-6 max-w-md w-full text-center relative shadow-2xl">
+            <!-- Close Button -->
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+
+            <!-- Verification Steps Area -->
+            <div id="verification-step">
+                <h2 class="text-2xl font-bold text-red-500 mb-2">🔞 Video Locked</h2>
+                <p class="text-gray-300 mb-4 text-sm">Please verify you are human by completing 5 steps to unlock this premium video.</p>
+                
+                <!-- 10-Second Teaser Video Area -->
+                <div class="mb-4">
+                    <video id="teaser-video" class="w-full rounded-lg border border-gray-700 aspect-video bg-black" controls muted playsinline>
+                        <!-- 👇👇👇 আপনার 10 সেকেন্ডের ভিডিও লিংক (যেমন: .mp4 লিংক) নিচের src="" এর ভেতরে দিন 👇👇👇 -->
+                        <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+                        Your browser does not support HTML5 video.
+                    </video>
+                    <p class="text-xs text-gray-400 mt-1">Watch the video to unlock the button.</p>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="w-full bg-gray-700 rounded-full h-3 mb-2 overflow-hidden">
+                    <div id="unlock-progress" class="bg-red-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+                <p id="step-text" class="text-gray-400 text-xs mb-4 font-semibold">Step 0 of 5 Completed</p>
+                
+                <!-- Action Button (This opens Adsterra and increments step) -->
+                <!-- [আপনার Adsterra Direct Link এখানে দিন] -->
+                <a id="ad-btn" href="javascript:void(0)" target="_blank" onclick="handleAdClick(event)" class="inline-block w-full bg-gray-600 opacity-50 pointer-events-none text-white font-bold py-3 px-4 rounded-lg transition-all">
+                    Please wait 10s...
+                </a>
+            </div>
+
+            <!-- Fake Video Player Area (Shows after 5 clicks) -->
+            <div id="video-player-step" class="hidden">
+                <h2 class="text-xl font-bold text-green-500 mb-4">✅ Verification Complete</h2>
+                <div class="aspect-video bg-black rounded-lg border border-gray-700 flex items-center justify-center relative overflow-hidden">
+                    <div class="text-center animate-pulse">
+                        <svg class="w-12 h-12 text-gray-500 mx-auto mb-2 spin-slow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <p class="text-gray-400 text-sm mt-2">Connecting to secure server...</p>
+                    </div>
+                </div>
+                <p class="text-red-400 text-xs mt-4">Server overloaded! Video removed due to copyright violation.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for 5-Step Logic -->
     <script>
-        // Database of 100 Categories (Mix of Real data & Programmatically Generated for fullness)
-        const baseCategories = [
-            { name: "Search Engines", icon: "fa-magnifying-glass", links: [
-                { name: "Google", url: "https://google.com", desc: "Primary search engine" },
-                { name: "Bing", url: "https://bing.com", desc: "Microsoft search" },
-                { name: "DuckDuckGo", url: "https://duckduckgo.com", desc: "Privacy focused" }
-            ]},
-            { name: "Social Media", icon: "fa-hashtag", links: [
-                { name: "Facebook", url: "https://facebook.com", desc: "Connect with friends" },
-                { name: "X (Twitter)", url: "https://twitter.com", desc: "Microblogging" },
-                { name: "Instagram", url: "https://instagram.com", desc: "Photo sharing" },
-                { name: "LinkedIn", url: "https://linkedin.com", desc: "Professional network" }
-            ]},
-            { name: "Video Streaming", icon: "fa-play", links: [
-                { name: "YouTube", url: "https://youtube.com", desc: "Video sharing" },
-                { name: "Netflix", url: "https://netflix.com", desc: "Movies & TV" },
-                { name: "Chorki", url: "https://chorki.com", desc: "Bangla entertainment" }
-            ]},
-            { name: "AI Tools", icon: "fa-robot", links: [
-                { name: "ChatGPT", url: "https://chat.openai.com", desc: "OpenAI Chatbot" },
-                { name: "Gemini", url: "https://gemini.google.com", desc: "Google AI" },
-                { name: "Claude", url: "https://claude.ai", desc: "Anthropic AI" }
-            ]},
-            { name: "Email Services", icon: "fa-envelope", links: [
-                { name: "Gmail", url: "https://mail.google.com", desc: "Google Mail" },
-                { name: "Outlook", url: "https://outlook.com", desc: "Microsoft Mail" },
-                { name: "ProtonMail", url: "https://proton.me", desc: "Secure Email" }
-            ]},
-            { name: "News (Bangladesh)", icon: "fa-newspaper", links: [
-                { name: "Prothom Alo", url: "https://prothomalo.com", desc: "Daily newspaper" },
-                { name: "The Daily Star", url: "https://thedailystar.net", desc: "English daily" },
-                { name: "Somoy News", url: "https://somoynews.tv", desc: "News portal" }
-            ]},
-            { name: "E-Commerce (BD)", icon: "fa-cart-shopping", links: [
-                { name: "Daraz", url: "https://daraz.com.bd", desc: "Online shopping" },
-                { name: "Rokomari", url: "https://rokomari.com", desc: "Books & more" },
-                { name: "Chaldal", url: "https://chaldal.com", desc: "Grocery delivery" }
-            ]},
-            { name: "Web Development", icon: "fa-code", links: [
-                { name: "GitHub", url: "https://github.com", desc: "Code hosting" },
-                { name: "CodePen", url: "https://codepen.io", desc: "Frontend playground" },
-                { name: "Vercel", url: "https://vercel.com", desc: "Hosting platform" }
-            ]},
-            { name: "Design & UI", icon: "fa-pen-nib", links: [
-                { name: "Figma", url: "https://figma.com", desc: "Design tool" },
-                { name: "Canva", url: "https://canva.com", desc: "Graphic design" },
-                { name: "Dribbble", url: "https://dribbble.com", desc: "Design inspiration" }
-            ]},
-            { name: "Cloud Storage", icon: "fa-cloud", links: [
-                { name: "Google Drive", url: "https://drive.google.com", desc: "Cloud files" },
-                { name: "Dropbox", url: "https://dropbox.com", desc: "File hosting" },
-                { name: "OneDrive", url: "https://onedrive.live.com", desc: "Microsoft cloud" }
-            ]},
-            { name: "Education & Learning", icon: "fa-graduation-cap", links: [
-                { name: "10 Minute School", url: "https://10minuteschool.com", desc: "BD EdTech" },
-                { name: "Coursera", url: "https://coursera.org", desc: "Online courses" },
-                { name: "Udemy", url: "https://udemy.com", desc: "Learning platform" }
-            ]},
-            { name: "Tech News", icon: "fa-microchip", links: [
-                { name: "TechCrunch", url: "https://techcrunch.com", desc: "Startup news" },
-                { name: "The Verge", url: "https://theverge.com", desc: "Tech & science" },
-                { name: "Hacker News", url: "https://news.ycombinator.com", desc: "Dev news" }
-            ]},
-            { name: "Job Portals (BD)", icon: "fa-briefcase", links: [
-                { name: "Bdjobs", url: "https://bdjobs.com", desc: "Jobs in Bangladesh" },
-                { name: "LinkedIn Jobs", url: "https://linkedin.com/jobs", desc: "Global jobs" }
-            ]},
-            { name: "Freelancing", icon: "fa-laptop-house", links: [
-                { name: "Upwork", url: "https://upwork.com", desc: "Freelance talent" },
-                { name: "Fiverr", url: "https://fiverr.com", desc: "Freelance services" },
-                { name: "Freelancer", url: "https://freelancer.com", desc: "Hire freelancers" }
-            ]},
-            { name: "Productivity", icon: "fa-check-double", links: [
-                { name: "Notion", url: "https://notion.so", desc: "Workspace" },
-                { name: "Trello", url: "https://trello.com", desc: "Project management" },
-                { name: "Todoist", url: "https://todoist.com", desc: "To-do lists" }
-            ]}
-        ];
+        // =================================================================
+        // 💰💰 আপনার Adsterra Direct Link নিচে বসান 💰💰
+        // =================================================================
+        let adLink = "https://www.profitablecpmrate.com/xxxxxx"; // <-- এই ডাবল কোটেশনের (" ") ভেতরে আপনার লিংক দিন
 
-        // Let's programmatically expand the list to reach exactly 100 categories to meet user request
-        const extraTopics = [
-            "Finance", "Banking BD", "Cryptocurrency", "Stock Market", "Real Estate", 
-            "Travel & Flights", "Hotels", "Food Delivery", "Recipes", "Health & Fitness",
-            "Sports News", "Cricket", "Football", "Gaming", "PC Building",
-            "Mobile Reviews", "Photography", "Stock Photos", "Fonts", "Icons",
-            "Colors", "CSS Frameworks", "JS Libraries", "Web Hosting", "Domains",
-            "Marketing", "SEO Tools", "Analytics", "Music Streaming", "Podcasts",
-            "Audiobooks", "E-Books", "Comics", "Anime", "Movies Database",
-            "Ticket Booking", "Event Management", "Government BD", "NID Services", "Passport BD",
-            "Visa Information", "Weather", "Maps & Navigation", "Translation", "Dictionaries",
-            "Encyclopedia", "Math Tools", "Science", "History", "Art Galleries",
-            "Museums", "DIY & Crafts", "Gardening", "Pet Care", "Automotive",
-            "Car Reviews", "Motorcycles", "Fashion", "Beauty", "Cosmetics",
-            "Watches", "Jewelry", "Kids & Baby", "Toys", "Gifts",
-            "Wedding Planning", "Astrology", "Religion", "Charity", "Volunteering",
-            "Cybersecurity", "VPN Services", "Password Managers", "Antivirus", "Open Source",
-            "Linux", "Windows", "MacOS", "Android", "iOS",
-            "App Stores", "Browser Extensions", "Data Science", "Machine Learning", "IoT"
-        ];
+        let currentStep = 1;
+        const totalSteps = 5;
+        let stepTimer = null;
 
-        const allCategories = [...baseCategories];
-        const iconList = ["fa-star", "fa-bolt", "fa-leaf", "fa-fire", "fa-heart", "fa-gem", "fa-cube", "fa-compass"];
-
-        extraTopics.forEach((topic, index) => {
-            if(allCategories.length < 100) {
-                allCategories.push({
-                    name: topic,
-                    icon: iconList[index % iconList.length],
-                    links: [
-                        { name: `Best ${topic} Sites`, url: `https://www.google.com/search?q=best+${encodeURIComponent(topic)}+websites`, desc: `Search portals for ${topic}` },
-                        { name: `${topic} Resources`, url: `https://www.google.com/search?q=${encodeURIComponent(topic)}+resources+online`, desc: `Top resources for ${topic}` }
-                    ]
+        // Hijack all video clicks
+        document.addEventListener('DOMContentLoaded', () => {
+            const videoLinks = document.querySelectorAll('.grid a, main a');
+            videoLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault(); // Stop normal redirect
+                    
+                    // Grab the link if you already pasted it in the HTML href attribute
+                    if(this.href && !this.href.includes(window.location.host) && !this.href.includes('#')) {
+                        adLink = this.href;
+                    }
+                    
+                    openUnlockModal();
                 });
-            }
+            });
         });
 
-        // Add IDs for reference
-        allCategories.forEach((cat, idx) => cat.id = `cat-${idx}`);
-
-        // DOM Elements
-        const sidebarCategories = document.getElementById('sidebarCategories');
-        const mainContainer = document.getElementById('mainContainer');
-        const globalSearch = document.getElementById('globalSearch');
-        const categorySearch = document.getElementById('categorySearch');
-        const timeDisplay = document.getElementById('timeDisplay');
-
-        // Render Sidebar
-        function renderSidebar(categories) {
-            sidebarCategories.innerHTML = '';
-            categories.forEach(cat => {
-                const btn = document.createElement('button');
-                btn.className = 'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors text-left';
-                btn.onclick = () => scrollToCategory(cat.id);
-                btn.innerHTML = `
-                    <i class="fa-solid ${cat.icon} w-5 text-center opacity-70"></i>
-                    <span class="truncate font-medium">${cat.name}</span>
-                `;
-                sidebarCategories.appendChild(btn);
-            });
+        function openUnlockModal() {
+            document.getElementById('unlock-modal').classList.remove('hidden');
+            resetModal();
         }
 
-        // Render Main Content
-        function renderMain(categories) {
-            mainContainer.innerHTML = '';
-            categories.forEach(cat => {
-                const section = document.createElement('div');
-                section.id = cat.id;
-                section.className = 'mb-10 category-section scroll-mt-24';
-                
-                let linksHTML = cat.links.map(link => `
-                    <a href="${link.url}" target="_blank" class="group bg-white border border-gray-100 p-4 rounded-xl hover:shadow-lg hover:border-indigo-100 transition-all duration-300 flex items-start gap-4">
-                        <div class="bg-gray-50 p-3 rounded-lg group-hover:bg-indigo-50 transition-colors">
-                            <img src="https://www.google.com/s2/favicons?domain=${link.url}&sz=32" alt="" class="w-6 h-6 object-contain rounded" onerror="this.src='https://placehold.co/32x32/e2e8f0/64748b?text=W'">
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <h3 class="text-sm font-semibold text-gray-800 group-hover:text-indigo-600 truncate">${link.name}</h3>
-                            <p class="text-xs text-gray-500 mt-1 truncate">${link.desc}</p>
-                        </div>
-                        <i class="fa-solid fa-arrow-up-right-from-square text-gray-300 group-hover:text-indigo-400 text-xs mt-1"></i>
-                    </a>
-                `).join('');
-
-                section.innerHTML = `
-                    <div class="flex items-center gap-3 mb-5 border-b border-gray-200 pb-2">
-                        <i class="fa-solid ${cat.icon} text-indigo-500 text-lg"></i>
-                        <h2 class="text-xl font-bold text-gray-800">${cat.name}</h2>
-                        <span class="ml-auto text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded-full">${cat.links.length} Sites</span>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                        ${linksHTML}
-                    </div>
-                `;
-                mainContainer.appendChild(section);
-            });
+        function closeModal() {
+            document.getElementById('unlock-modal').classList.add('hidden');
+            clearInterval(stepTimer);
+            const video = document.getElementById('teaser-video');
+            if(video) video.pause();
         }
 
-        // Search Functionality
-        globalSearch.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            const filtered = allCategories.map(cat => {
-                const matchCat = cat.name.toLowerCase().includes(term);
-                const matchedLinks = cat.links.filter(l => l.name.toLowerCase().includes(term) || l.desc.toLowerCase().includes(term));
-                
-                if (matchCat || matchedLinks.length > 0) {
-                    return {
-                        ...cat,
-                        links: matchCat ? cat.links : matchedLinks // If category matches, show all links, else show matched links
-                    };
-                }
-                return null;
-            }).filter(Boolean);
+        function resetModal() {
+            currentStep = 1;
+            document.getElementById('verification-step').classList.remove('hidden');
+            document.getElementById('video-player-step').classList.add('hidden');
             
-            renderMain(filtered);
-        });
-
-        categorySearch.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            const filtered = allCategories.filter(cat => cat.name.toLowerCase().includes(term));
-            renderSidebar(filtered);
-        });
-
-        // Smooth Scroll & Auto-close Mobile Menu
-        function scrollToCategory(id) {
-            const el = document.getElementById(id);
-            if(el) {
-                el.scrollIntoView({ behavior: 'smooth' });
+            // Reset video to start
+            const video = document.getElementById('teaser-video');
+            if(video) {
+                video.currentTime = 0;
             }
             
-            // Auto close mobile sidebar if it is open
-            if (window.innerWidth < 768) {
-                const sidebar = document.querySelector('aside');
-                const mobileOverlay = document.getElementById('mobileOverlay');
-                if (!sidebar.classList.contains('hidden')) {
-                    sidebar.classList.add('hidden');
-                    sidebar.classList.remove('absolute');
-                    sidebar.classList.remove('z-40');
-                    mobileOverlay.classList.add('hidden');
-                }
+            updateUI();
+        }
+
+        function updateUI() {
+            const progressPercent = ((currentStep - 1) / totalSteps) * 100;
+            document.getElementById('unlock-progress').style.width = `${progressPercent}%`;
+            document.getElementById('step-text').innerText = `Step ${currentStep - 1} of ${totalSteps} Completed`;
+            
+            const btn = document.getElementById('ad-btn');
+            
+            // Disable button initially for 10 seconds
+            btn.href = "javascript:void(0)"; 
+            btn.classList.add('opacity-50', 'pointer-events-none', 'bg-gray-600', 'shadow-none');
+            btn.classList.remove('bg-red-600', 'hover:bg-red-700', 'shadow-[0_0_15px_rgba(220,38,38,0.5)]');
+            
+            let timeLeft = 10;
+            btn.innerText = `Please wait ${timeLeft}s...`;
+            
+            // Try to auto-play the video
+            const video = document.getElementById('teaser-video');
+            if(video) {
+                video.play().catch(e => console.log("Autoplay blocked by browser. User must click play."));
             }
+
+            // Start Countdown Timer
+            clearInterval(stepTimer);
+            stepTimer = setInterval(() => {
+                timeLeft--;
+                if(timeLeft > 0) {
+                    btn.innerText = `Please wait ${timeLeft}s...`;
+                } else {
+                    // Timer finished, unlock button
+                    clearInterval(stepTimer);
+                    btn.innerText = `Complete Step ${currentStep} (Watch Ad)`;
+                    btn.href = adLink; 
+                    btn.classList.remove('opacity-50', 'pointer-events-none', 'bg-gray-600', 'shadow-none');
+                    btn.classList.add('bg-red-600', 'hover:bg-red-700', 'shadow-[0_0_15px_rgba(220,38,38,0.5)]');
+                }
+            }, 1000);
         }
 
-        // Clock Update
-        function updateTime() {
-            const now = new Date();
-            timeDisplay.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        function handleAdClick(e) {
+            const btn = document.getElementById('ad-btn');
+            
+            // If button is locked, don't do anything
+            if (currentStep > totalSteps || btn.classList.contains('pointer-events-none')) {
+                e.preventDefault();
+                return;
+            }
+            
+            // Change button to "Verifying..." so they wait on the ad a bit
+            btn.innerText = "Verifying...";
+            btn.classList.add('opacity-50', 'pointer-events-none', 'bg-gray-600', 'shadow-none');
+            btn.classList.remove('bg-red-600', 'hover:bg-red-700', 'shadow-[0_0_15px_rgba(220,38,38,0.5)]');
+            
+            // Pause the video while they verify
+            const video = document.getElementById('teaser-video');
+            if(video) video.pause();
+            
+            // Wait 2.5 seconds before showing the next step
+            setTimeout(() => {
+                currentStep++;
+                if (currentStep > totalSteps) {
+                    showVideoPlayer();
+                } else {
+                    updateUI(); // This will restart the 10s timer for the next step
+                }
+            }, 2500);
         }
-        setInterval(updateTime, 1000);
-        updateTime();
 
-        // Mobile Menu Logic
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const sidebar = document.querySelector('aside');
-        const mobileOverlay = document.getElementById('mobileOverlay');
-
-        mobileMenuBtn.addEventListener('click', () => {
-            sidebar.classList.toggle('hidden');
-            sidebar.classList.toggle('absolute');
-            sidebar.classList.toggle('z-40');
-            mobileOverlay.classList.toggle('hidden');
-        });
-
-        mobileOverlay.addEventListener('click', () => {
-            sidebar.classList.add('hidden');
-            sidebar.classList.remove('absolute');
-            sidebar.classList.remove('z-40');
-            mobileOverlay.classList.add('hidden');
-        });
-
-        // Initial Render
-        renderSidebar(allCategories);
-        renderMain(allCategories);
-
+        function showVideoPlayer() {
+            document.getElementById('unlock-progress').style.width = `100%`;
+            document.getElementById('step-text').innerText = `Verification Complete!`;
+            
+            setTimeout(() => {
+                document.getElementById('verification-step').classList.add('hidden');
+                document.getElementById('video-player-step').classList.remove('hidden');
+            }, 800);
+        }
     </script>
 </body>
 </html>
